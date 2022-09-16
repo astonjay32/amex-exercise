@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import javax.persistence.*;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "name")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Apple.class, name = "Apple"),
@@ -11,6 +13,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 )
 @JsonIgnoreProperties("name")
 public abstract class Product {
+
+    public Product(){
+    }
 
     protected String name;
     protected Float price;
@@ -35,4 +40,6 @@ public abstract class Product {
     public void setPrice(Float price) {
         this.price = price;
     }
+
+
 }

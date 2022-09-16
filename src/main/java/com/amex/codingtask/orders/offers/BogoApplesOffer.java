@@ -1,7 +1,7 @@
 package com.amex.codingtask.orders.offers;
 
 import com.amex.codingtask.orders.products.Apple;
-import com.amex.codingtask.orders.service.Order;
+import com.amex.codingtask.orders.service.CustomerOrder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +13,7 @@ public class BogoApplesOffer implements Offer{
     }
 
     @Override
-    public Float apply(Order order) {
+    public Float apply(CustomerOrder order) {
 
         long numApples = order.getProducts().stream().filter(p -> p instanceof Apple).count();
         if(numApples > 1){

@@ -2,27 +2,38 @@ package com.amex.codingtask.orders.service;
 
 import com.amex.codingtask.orders.offers.Offer;
 import com.amex.codingtask.orders.products.Product;
+import com.amex.codingtask.orders.repo.OrderRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
 
 
+    @Autowired
+    private OrderRepo orderRepo;
+
     private List<Offer> activeOffers = new ArrayList();
 
-    public OrderResponse receiveOrder(Order order){
+    public CustomerOrder receiveOrder(CustomerOrder order){
+        order.setSubTotal(calculateSubTotal(order));
+        order.setTotal(calculateTotalCost(order));
+        order.setSummary(createSummary(order));
 
-        OrderResponse orderResponse = new OrderResponse();
-        orderResponse.setOrder(order);
-        orderResponse.setSubTotal(calculateSubTotal(order));
-        orderResponse.setTotalCost(calculateTotalCost(order));
-        orderResponse.setSummary(createSummary(order));
+        orderRepo.save(order);
+        return order;
+    }
 
-        return orderResponse;
+    public Iterable<CustomerOrder> allOrders(){
+        return orderRepo.findAll();
+    }
+
+    public CustomerOrder getOrderById(Long id){
+        return Optional.of(orderRepo.findById(id)).get().orElse(null);
     }
 
     @Autowired
@@ -30,7 +41,7 @@ public class OrderService {
         this.activeOffers = activeOffers;
     }
 
-    Float calculateSubTotal(Order order){
+    Float calculateSubTotal(CustomerOrder order){
         Float totalCost = 0f;
         for(Product product : order.getProducts()){
             totalCost += product.getPrice();
@@ -38,13 +49,13 @@ public class OrderService {
         return totalCost;
     }
 
-    Float calculateTotalCost(Order order){
+    Float calculateTotalCost(CustomerOrder order){
         Float subTotal = calculateSubTotal(order);
         Float offerDiscounts = applyOfferDiscounts(order);
         return subTotal - offerDiscounts;
     }
 
-    Float applyOfferDiscounts(Order order){
+    Float applyOfferDiscounts(CustomerOrder order){
         Float offerDiscount = 0F;
         for(Offer offer : activeOffers){
             offerDiscount += offer.apply(order);
@@ -52,7 +63,7 @@ public class OrderService {
         return offerDiscount;
     }
 
-    String createSummary(Order order){
+    String createSummary(CustomerOrder order){
         StringBuilder sb = new StringBuilder();
         sb.append("Summary:\n");
         for(Product product : order.getProducts()){
