@@ -4,6 +4,7 @@ public class OrderResponse {
 
     private Order order;
     private String summary;
+    private Float subTotal;
     private Float totalCost;
 
     public String getSummary() {
@@ -28,5 +29,13 @@ public class OrderResponse {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public Float getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(Float subTotal) {
+        this.subTotal = subTotal;
     }
 }
